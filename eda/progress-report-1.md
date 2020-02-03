@@ -35,6 +35,12 @@ ap_blue_med <- "#3F6E90"
 ap_blue_light <- "#A8C4D9"
 ap_green <- "#669166"
 ap_yellow <- "#F4F465"
+
+# Historical records found by Amber Thomas
+MAX_OBSERVED_AGE = 52
+MIN_LIFE_EXPECTANCY = 22
+
+ANALYSIS_YEAR = make_date(2017L)
 #===============================================================================
 acquisitions <- read_rds(acquistions_file_path)
 ```
@@ -212,9 +218,120 @@ If I were to improve this graph (and I would like to), I would:
 
 ## Task 3: When Will the Captive Orca be Extinct
 
-Re-create this graph: … **UNFINISHED**
+There are still over 500 cetaceans living in human care in the United
+States. Though acquisition of wild orcas is no longer legal, one point
+of debate is whether people should be allowed to breed cetaceans in
+captivity. What would happen to the cetacean population if they
+discontinued breeding? Amber Thomas starts with orcas because they have
+gotten lots of publicity for their emotional intelligence. Though
+SeaWorld discontinued their breeding program in 2016, there are still 24
+orcas in captivity today, and, as Amber says, “these animals live for a
+*long* time.”
+
+Re-create this graph:
 
 ![](../images/pr1_captive_orcas_extinct.png)
+
+``` r
+all_live_orcas <-
+  all_cetacean_data %>% 
+  filter(species == "Killer Whale; Orca", str_detect(str_to_lower(status), pattern = "alive??")) %>% 
+  mutate(
+    min_death_year = birth_year + years(MIN_LIFE_EXPECTANCY), 
+    max_death_year = birth_year + years(MAX_OBSERVED_AGE)
+  )
+
+living_orcas <- tibble(
+  year = seq(from = ANALYSIS_YEAR, to = make_date(2100L), by = "year")
+) %>% 
+  group_by(year) %>% 
+  mutate(
+    min_lifetimes = if_else(year == ANALYSIS_YEAR, length(all_live_orcas), sum(all_live_orcas$min_death_year > year)), 
+    max_lifetimes = if_else(year == ANALYSIS_YEAR, length(all_live_orcas), sum(all_live_orcas$max_death_year > year))
+  )
+```
+
+``` r
+living_orcas %>% 
+  pivot_longer(
+    cols = c(min_lifetimes, max_lifetimes), 
+    names_to = "estimate", 
+    values_to = "num_orcas"
+  ) %>% 
+  ggplot(aes(year, num_orcas, color = estimate)) + 
+  geom_line(linetype = "dashed") + 
+  geom_text(
+    x = ANALYSIS_YEAR + years(6), 
+    y = length(all_live_orcas), 
+    label = str_glue("{length(all_live_orcas)} orcas in {year(ANALYSIS_YEAR)}"), 
+    color = ap_blue_light, 
+    size = 4
+  ) + 
+  geom_text(
+    x = make_date(2050L), 
+    y = 17L, 
+    label = str_glue("If all animals live\nto max observed age\n({MAX_OBSERVED_AGE} years)"), 
+    color = ap_yellow, 
+    size = 4
+  ) + 
+  geom_text(
+    x = make_date(2030L), 
+    y = 12.5, 
+    label = str_glue("If all animals live\nto minimum life expectancy\n({MIN_LIFE_EXPECTANCY} years)"), 
+    color = ap_green, 
+    size = 4
+  ) + 
+  geom_text(
+    x = make_date(2041L), 
+    y = 1, 
+    label = "2039", 
+    size = 4, 
+    color = ap_green
+  ) + 
+  geom_text(
+    x = make_date(2072L), 
+    y = 1, 
+    label = "1970", 
+    size = 4, 
+    color = ap_yellow
+  ) + 
+  scale_color_manual(
+    labels = c(
+      "max_lifetimes" = "If all animals lived\nto max observed age\n(52 years)", 
+      "min_lifetimes" = "If all animals live\nto minimum life expectancy\n(22 years)"
+    ), 
+    values = 
+      c("max_lifetimes" = ap_yellow, "min_lifetimes" = ap_green)
+  ) + 
+  labs(
+    title = "When Will the Captive Orca Population be Extinct?", 
+    y = "Population", 
+    x = "Zero Orcas By", 
+    color = ""
+  ) + 
+  coord_cartesian(xlim = c(ANALYSIS_YEAR, make_date(2072L))) + 
+  theme(
+    aspect.ratio = 1/2, 
+    axis.ticks.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.x = element_blank(), 
+    axis.text.x = element_blank(), 
+    panel.grid = element_blank(),
+    panel.background = element_rect(fill = ap_blue_dark),
+    plot.title = element_text(color = ap_blue_med, hjust = 0.5),
+    title = element_text(color = ap_blue_med), 
+    axis.text = element_text(color = ap_blue_med), 
+    legend.position = "none"
+  )
+```
+
+![](progress-report-1_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+*Note* - Necessary Improvements:
+
+  - theme text quality is pixelated/low, I want it to be *crisp*
+  - add single `ap_blue_light` point at (`ANALYSIS_YEAR`,
+    `length(all_live_orcas)`)
 
 ## Task 4: When Will the Entire Captive Cetacean Population be Extinct (interactive)
 
