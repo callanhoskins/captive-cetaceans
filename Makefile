@@ -1,11 +1,11 @@
 # Search path
-VPATH =
+VPATH = scripts data data-raw docs eda reports
 
 # Processed data files
-DATA =
+DATA = acquisitions.rds all_cetaceans_data.rds
 
 # EDA studies
-EDA =
+EDA = progress-report-1.md
 
 # Reports
 REPORTS =
@@ -14,10 +14,11 @@ REPORTS =
 all : $(DATA) $(EDA) $(REPORTS)
 
 # Data dependencies
-
+acquisitions.rds: acquisitions.csv
+all_cetaceans_data.rds : all_cetaceans_data.csv
 
 # EDA study and report dependencies
-
+progress-report-1.md : acquisitions.rds all_cetaceans_data.rds
 
 # Pattern rules
 %.rds : %.R
