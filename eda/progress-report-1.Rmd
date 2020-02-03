@@ -43,9 +43,7 @@ acquisitions <- read_rds(acquistions_file_path)
 
 The original author produced this graph of acquisitions over time by type of acquisition. As part of my first progress report, I will re-create it: 
 
-```{r pressure, echo=FALSE, fig.cap = "Acquisitions Over Time", out.width='100%'}
-knitr::include_graphics(acquisitions_over_time_path)
-```
+![](../images/pr1_acquisitions_over_time.png)
 
 Now, I can recreate the graph: 
 
@@ -92,9 +90,7 @@ I will now reproduce another one of the graphs that Amber Thomas did for her ori
 
 Here is the graph to recreate: 
 
-```{r asr, echo=FALSE, fig.cap = "Annual Survival Rate", out.width='100%'}
-knitr::include_graphics(life_exp_path)
-```
+![](../images/pr1_life_exp.png)
 
 ```{r}
 # read in all cetacean data
@@ -200,14 +196,10 @@ If I were to improve this graph (and I would like to), I would:
 
 Re-create this graph: ... **UNFINISHED**
 
-```{r extinct, echo=FALSE, fig.cap = "When will the captive orca be extinct?", out.width='100%'}
-knitr::include_graphics(path = captive_orcas_extinct_path)
-```
+![](../images/pr1_captive_orcas_extinct.png)
 
 ## Task 4: When Will the Entire Captive Cetacean Population be Extinct (interactive)
 
 Re-create this plot: ... **UNFINISHED**
 
-```{r extinct2, echo=FALSE, fig.cap = "When will the captive orca be extinct?", out.width='100%'}
-knitr::include_graphics(path = captive_cetaceans_extinct_path)
-```
+![](../images/pr1_captive_cetaceans_extinct.png)

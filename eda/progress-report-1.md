@@ -45,17 +45,7 @@ The original author produced this graph of acquisitions over time by
 type of acquisition. As part of my first progress report, I will
 re-create it:
 
-<div class="figure">
-
-<img src="/home/chosk/GitHub/captive-cetaceans/eda/pr1_acquisitions_over_time.png" alt="Acquisitions Over Time" width="100%" />
-
-<p class="caption">
-
-Acquisitions Over Time
-
-</p>
-
-</div>
+![](../images/pr1_acquisitions_over_time.png)
 
 Now, I can recreate the graph:
 
@@ -112,17 +102,7 @@ with small tweaks from myself. She has excellent style\!
 
 Here is the graph to recreate:
 
-<div class="figure">
-
-<img src="/home/chosk/GitHub/captive-cetaceans/eda/pr1_life_exp.png" alt="Annual Survival Rate" width="100%" />
-
-<p class="caption">
-
-Annual Survival Rate
-
-</p>
-
-</div>
+![](../images/pr1_life_exp.png)
 
 ``` r
 # read in all cetacean data
@@ -234,30 +214,10 @@ If I were to improve this graph (and I would like to), I would:
 
 Re-create this graph: … **UNFINISHED**
 
-<div class="figure">
-
-<img src="/home/chosk/GitHub/captive-cetaceans/eda/pr1_captive_orcas_extinct.png" alt="When will the captive orca be extinct?" width="100%" />
-
-<p class="caption">
-
-When will the captive orca be extinct?
-
-</p>
-
-</div>
+![](../images/pr1_captive_orcas_extinct.png)
 
 ## Task 4: When Will the Entire Captive Cetacean Population be Extinct (interactive)
 
 Re-create this plot: … **UNFINISHED**
 
-<div class="figure">
-
-<img src="/home/chosk/GitHub/captive-cetaceans/eda/pr1_captive_cetaceans_extinct.png" alt="When will the captive orca be extinct?" width="100%" />
-
-<p class="caption">
-
-When will the captive orca be extinct?
-
-</p>
-
-</div>
+![](../images/pr1_captive_cetaceans_extinct.png)
