@@ -1,7 +1,7 @@
 Progress Report 1
 ================
 Callan Hoskins
-2020-02-03
+2020-02-04
 
   - [Task 1: Histogram of Acquisitions Over
     Time](#task-1-histogram-of-acquisitions-over-time)
