@@ -1,7 +1,7 @@
 Progress Report 2
 ================
 Callan Hoskins
-2020-02-17
+2020-02-18
 
   - [Families within Captive Cetacean
     Populations](#families-within-captive-cetacean-populations)
@@ -44,7 +44,16 @@ all_cetacean_data <-
 duplicate_entries <-
   all_cetacean_data %>% 
   filter(
-    !name %in% c("(hybrid)", "(not named)", "(no name)", "x", "(none)", "#", "@ riverhead\rfound."), 
+    !name %in% 
+      c(
+        "(hybrid)", 
+        "(not named)", 
+        "(no name)", 
+        "x", 
+        "(none)", 
+        "#", 
+        "@ riverhead\rfound."
+      ), 
     !str_detect(name, "no |fetus|none|unk")
   ) %>% 
   mutate(
