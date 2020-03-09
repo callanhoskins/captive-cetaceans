@@ -9,6 +9,7 @@ Callan Hoskins
   - [Parks](#parks)
       - [Cetaceans with high numbers of
         transfers](#cetaceans-with-high-numbers-of-transfers)
+      - [Cetacean Lifetime by Location](#cetacean-lifetime-by-location)
 
 # Families within Captive Cetacean Populations
 
@@ -359,6 +360,15 @@ less in captivity before passing away, during which time they were
 transferred more than ten times. Again, I am no marine biologist, but I
 recognize that a transfer puts incredible stress on an animal.
 
+## Cetacean Lifetime by Location
+
+I am interested in seeing how long animals live when they are housed in
+certain parks. Our naive first approach below seems to have the fault
+that it does not make a difference between the collection site and the
+ultimate place where the animals end up. This doesn’t provide much
+information about the parks because we have no knowledge or control over
+the place where the animals were originally captured.
+
 ``` r
 transfer_data %>% 
   mutate(capt_lifetime = (birth_year %--% entry_date) %>% time_length("years")) %>% 
@@ -372,3 +382,48 @@ transfer_data %>%
 ```
 
 ![](parks_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+transfer_data_parks <- 
+  transfer_data %>% 
+  filter(!map_lgl(location, ~ str_detect(., natural_locs) %>% any()))
+transfer_data_parks %>% 
+  count(location) %>% 
+  arrange(location)
+```
+
+    ## # A tibble: 122 x 2
+    ##    location                       n
+    ##    <chr>                      <int>
+    ##  1 Animal Wonderland              2
+    ##  2 Aquatic Mammal Enterprises     3
+    ##  3 Aquatica Orlando               7
+    ##  4 Audubon Zoo                    3
+    ##  5 Brookfield Zoo                40
+    ##  6 Busch Gardens Tampa           16
+    ##  7 Clearwater Marine Aquarium    10
+    ##  8 Discovery Cove                91
+    ##  9 Dolfinarium Harderwijk         5
+    ## 10 Dolphin Academy                1
+    ## # … with 112 more rows
+
+``` r
+transfer_data_parks %>% 
+  mutate(capt_lifetime = (birth_year %--% entry_date) %>% time_length("years")) %>% 
+  drop_na(capt_lifetime) %>% 
+  group_by(location) %>% 
+  summarize(med_capt_lifetime = median(capt_lifetime)) %>% 
+  top_n(20, med_capt_lifetime) %>% 
+  ggplot(aes(fct_reorder(location, med_capt_lifetime), med_capt_lifetime)) + 
+  geom_point() + 
+  coord_flip() + 
+  scale_y_continuous(breaks = scales::breaks_width(5)) + 
+  theme_light() + 
+  labs(
+    title = "Twenty Best Parks for Median Cetacean Lifetime", 
+    y = "Median Cetacean Lifetime (years)", 
+    x = NULL
+  )
+```
+
+![](parks_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->

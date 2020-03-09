@@ -70,13 +70,99 @@ standardize_locs <- function(location) {
     str_detect(location, "Texas.*Stranding Network") ~ "TMMSN", 
     str_detect(location, "Texas State.*Aquarium.*") ~ "Texas State Aquarium", 
     str_detect(location, "Dolphinaris") ~ "Dolphinaris Arizona", 
-    str_detect(location, "Navy, US") ~ "US Navy", 
+    str_detect(location, "Navy, U\\.?S\\.?") ~ "US Navy", 
     str_detect(location, "Great America") ~ "Six Flags Great America", 
     str_detect(location, "^La Feria") ~ "La Feria de Chapultepec", 
     str_detect(location, "Six Flags Marine World") ~ "Marine World Africa USA", 
+    str_detect(location, "Utrish") ~ "Utrish Aquarium, Moscow", 
     TRUE ~ location
   )
 }
+
+# Natural origin/destination locations
+natural_locs <- 
+  c(
+    "Argentina", 
+    "Atlantic Ocean", 
+    "Atlantic Ocean, Unknown", 
+    "Avalon Beach, Florida", 
+    "^Bolivar", 
+    "Bullfrog Creek, Florida", 
+    "California, unknown beach", 
+    "CaliforniaPacific Ocean", 
+    "Carr Inlet", 
+    "Cedar Point", 
+    "Chile, Straits of Magellan", 
+    "Churchill Oaks, Louisiana", 
+    "Clearwater Beach, Florida", 
+    "Compano Bay, Texas", 
+    "Corpus Christi, Texas", 
+    "Cudjoe Key, Florida", 
+    "Curacao, Caribbean", 
+    "Eastern Florida", 
+    "Floating Pen, Grindavík Harbor", 
+    "Florida", 
+    "Florida Keys", 
+    "Escape, Virgin Islands", 
+    "Florida Keys, Escape", 
+    "Florida Keys, Re-Capture", 
+    "Florida, Atlantic Ocean", 
+    "Florida, Atlantic Ocean, off New Smyrna", 
+    "Florida, Gulf Coast", 
+    "Florida, Gulf of Mexico", 
+    "Florida, location unknown", 
+    "Florida, unknown", 
+    "Florida, Unknown", 
+    "Fort Pierce", 
+    "Fourchon", 
+    "Gulf of California", 
+    "Gulf of Mexico", 
+    "Gulf Shores", 
+    "Hatakejiriwan", 
+    "Hawaii, Pacific Ocean", 
+    "[hH]olding", 
+    "Hudson Bay, Manitoba", 
+    "Iceland", 
+    "Indian River Lagoon, Florida", 
+    "Indian River", 
+    "Jacksonville, Florida", 
+    "Japan,", 
+    "^Kettenburg", 
+    "Lower Matecumbe Key", 
+    "Melbourne Beach, Florida", 
+    "Mississippi, Gulf of Mexico", 
+    "Moriya coast, Japan", 
+    "Mosquito Lagoon, Florida", 
+    "Mustang Island", 
+    "Near Key West", 
+    "Okhotsk Sea, Russia", 
+    "[Ee]scape", 
+    "Pacific Ocean, California", 
+    "Panama City, Florida", 
+    "Pedder Bay", 
+    "Pender Harbor", 
+    "Penn Cove", 
+    "^Ponce", 
+    "^Port", 
+    "^Private", 
+    "^Puget Sound", 
+    "^Quintana Beach", 
+    "[cC]apture", 
+    "^Redington Beach", 
+    "^Sanibel", 
+    "Sea [pP]en", 
+    "^Shell Island", 
+    "South Padre Island", 
+    "^Straits of Magellan", 
+    "^Tampa Bay", 
+    "^Texas, Gulf", 
+    "^Three Sisters", 
+    "^[Uu]nknown", 
+    "Ultrish", 
+    "Vero Beach, Florida",
+    "White Sea, Russia"
+  )
+
 ```
 
 # Families within Captive Cetacean Populations
@@ -316,6 +402,10 @@ transfer_data %>%
 
 This data certainly tells a sad story. Many of these animals lived only a few years before dying, and they were transfered so many times within that short span of time. Orcas Kahana, Kilroy, and Kenau lived a year or less in captivity before passing away, during which time they were transferred more than ten times. Again, I am no marine biologist, but I recognize that a transfer puts incredible stress on an animal. 
 
+## Cetacean Lifetime by Location
+
+I am interested in seeing how long animals live when they are housed in certain parks. Our naive first approach below seems to have the fault that it does not make a difference between the collection site and the ultimate place where the animals end up. This doesn't provide much information about the parks because we have no knowledge or control over the place where the animals were originally captured. 
+
 ```{r}
 transfer_data %>% 
   mutate(capt_lifetime = (birth_year %--% entry_date) %>% time_length("years")) %>% 
@@ -326,5 +416,33 @@ transfer_data %>%
   ggplot(aes(fct_reorder(location, med_capt_lifetime), med_capt_lifetime)) + 
   geom_col() + 
   coord_flip()
+```
+
+```{r}
+transfer_data_parks <- 
+  transfer_data %>% 
+  filter(!map_lgl(location, ~ str_detect(., natural_locs) %>% any()))
+transfer_data_parks %>% 
+  count(location) %>% 
+  arrange(location)
+```
+
+```{r}
+transfer_data_parks %>% 
+  mutate(capt_lifetime = (birth_year %--% entry_date) %>% time_length("years")) %>% 
+  drop_na(capt_lifetime) %>% 
+  group_by(location) %>% 
+  summarize(med_capt_lifetime = median(capt_lifetime)) %>% 
+  top_n(20, med_capt_lifetime) %>% 
+  ggplot(aes(fct_reorder(location, med_capt_lifetime), med_capt_lifetime)) + 
+  geom_point() + 
+  coord_flip() + 
+  scale_y_continuous(breaks = scales::breaks_width(5)) + 
+  theme_light() + 
+  labs(
+    title = "Twenty Best Parks for Median Cetacean Lifetime", 
+    y = "Median Cetacean Lifetime (years)", 
+    x = NULL
+  )
 ```
 
