@@ -1,7 +1,7 @@
 Parks
 ================
 Callan Hoskins
-2020-03-08
+2020-03-09
 
   - [Families within Captive Cetacean
     Populations](#families-within-captive-cetacean-populations)
@@ -264,16 +264,23 @@ transfer_data <-
   )
 
 transfer_data %>% 
-  pull(transfers) %>% 
-  head()
+  select(name, transfers)
 ```
 
-    ## [1] NA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-    ## [2] NA                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-    ## [3] "SeaWorld San Diego to SeaWorld Aurora (??-???-1983) to SeaWorld San Diego (??-???-1983) to SeaWorld Aurora (??-???-1985) to SeaWorld San Diego (??-???-1985) to SeaWorld Orlando (< Nov 1987) to SeaWorld San Antonio (< 1991) to Busch Gardens Tampa (1991 / 1992) to National Aquarium in Baltimore (11-Oct-1992) to SeaWorld Aurora (22-Oct-1997) to SeaWorld San Antonio (26-Apr-1998) to SeaWorld Orlando (03-Apr-2000) to Busch Gardens Tampa (28-Sep-2000) to SeaWorld Orlando (19-Apr-2001)"
-    ## [4] "SeaWorld Orlando to SeaWorld San Diego (< Aug 1986)"                                                                                                                                                                                                                                                                                                                                                                                                                                                
-    ## [5] "SeaWorld San Diego to SeaWorld Aurora (< 1987) to SeaWorld San Antonio (13-Oct-1990?)"                                                                                                                                                                                                                                                                                                                                                                                                              
-    ## [6] "SeaWorld San Diego to New England Aquarium (22-Oct-1986) to U.S. Navy MMP (17-Nov-1987)"
+    ## # A tibble: 1,326 x 2
+    ##    name     transfers                                                           
+    ##    <chr>    <chr>                                                               
+    ##  1 dazzle   <NA>                                                                
+    ##  2 tursi    <NA>                                                                
+    ##  3 starbuck SeaWorld San Diego to SeaWorld Aurora (??-???-1983) to SeaWorld San…
+    ##  4 sandy    SeaWorld Orlando to SeaWorld San Diego (< Aug 1986)                 
+    ##  5 nacha    SeaWorld San Diego to SeaWorld Aurora (< 1987) to SeaWorld San Anto…
+    ##  6 kama     SeaWorld San Diego to New England Aquarium (22-Oct-1986) to U.S. Na…
+    ##  7 jenever  SeaWorld Orlando to SeaWorld San Antonio (< 1991) to SeaWorld Orlan…
+    ##  8 duffy    SeaWorld San Diego to SeaWorld Aurora (15-Apr-2000) to SeaWorld Orl…
+    ##  9 astra    SeaWorld San Diego to SeaWorld Aurora (??-???-????) to Unknown Hist…
+    ## 10 sunny    <NA>                                                                
+    ## # … with 1,316 more rows
 
 The first problem is how to extract information about these transfers
 from these strings… we are going to need some serious regex here\!
@@ -312,7 +319,18 @@ transfer_data <-
     origin_loc, 
     currently, 
     everything()
-  )
+  ) %>% 
+  group_by(name) %>% 
+  mutate(length_of_stay = lead(transfer_year) - transfer_year) %>% 
+  mutate(
+    length_of_stay = 
+      if_else(
+        is.na(length_of_stay) & status == "Alive", 
+        today() %>% year() %>% as.integer() - transfer_year, 
+        length_of_stay
+      )
+  ) %>% 
+  ungroup()
 ```
 
 ## Cetaceans with high numbers of transfers
@@ -392,7 +410,7 @@ transfer_data_parks %>%
   arrange(location)
 ```
 
-    ## # A tibble: 122 x 2
+    ## # A tibble: 119 x 2
     ##    location                       n
     ##    <chr>                      <int>
     ##  1 Animal Wonderland              2
@@ -405,10 +423,11 @@ transfer_data_parks %>%
     ##  8 Discovery Cove                91
     ##  9 Dolfinarium Harderwijk         5
     ## 10 Dolphin Academy                1
-    ## # … with 112 more rows
+    ## # … with 109 more rows
 
 ``` r
 transfer_data_parks %>% 
+  filter(acquisition == "Born") %>% 
   mutate(capt_lifetime = (birth_year %--% entry_date) %>% time_length("years")) %>% 
   drop_na(capt_lifetime) %>% 
   group_by(location) %>% 
@@ -427,3 +446,31 @@ transfer_data_parks %>%
 ```
 
 ![](parks_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+I like this analysis, but I still don’t have all that much faith in my
+measure of “lifetime” because it’s based on the `entry_date` and
+`origin_date` columns, which are not necessarily accurate. It is
+definitely interesting to see some of these statistics, especially the
+fact that the US Navy MMP has such a long median lifetime for the
+cetaceans that spend some time there. It may be more interesting to look
+at the median *length* of a cetacean’s stay at a given park.
+
+``` r
+transfer_data_parks %>% 
+  drop_na(length_of_stay) %>% 
+  group_by(location) %>% 
+  summarize(med_length_stay = median(length_of_stay)) %>% 
+  top_n(20, med_length_stay) %>% 
+  ggplot(aes(fct_reorder(location, med_length_stay), med_length_stay)) + 
+  geom_point() + 
+  coord_flip() + 
+  scale_y_continuous(breaks = scales::breaks_width(5)) + 
+  theme_light() + 
+  labs(
+    title = "Twenty Best Parks for Median Length of Stay", 
+    y = "Median Length of Individual Stay (years)", 
+    x = NULL
+  )
+```
+
+![](parks_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->

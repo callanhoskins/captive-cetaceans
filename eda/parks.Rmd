@@ -70,7 +70,7 @@ standardize_locs <- function(location) {
     str_detect(location, "Texas.*Stranding Network") ~ "TMMSN", 
     str_detect(location, "Texas State.*Aquarium.*") ~ "Texas State Aquarium", 
     str_detect(location, "Dolphinaris") ~ "Dolphinaris Arizona", 
-    str_detect(location, "Navy, U\\.?S\\.?") ~ "US Navy", 
+    str_detect(location, "Navy") ~ "US Navy MMP", 
     str_detect(location, "Great America") ~ "Six Flags Great America", 
     str_detect(location, "^La Feria") ~ "La Feria de Chapultepec", 
     str_detect(location, "Six Flags Marine World") ~ "Marine World Africa USA", 
@@ -336,8 +336,7 @@ transfer_data <-
   )
 
 transfer_data %>% 
-  pull(transfers) %>% 
-  head()
+  select(name, transfers)
 ```
 
 The first problem is how to extract information about these transfers from these strings... we are going to need some serious regex here!
@@ -376,7 +375,18 @@ transfer_data <-
     origin_loc, 
     currently, 
     everything()
-  )
+  ) %>% 
+  group_by(name) %>% 
+  mutate(length_of_stay = lead(transfer_year) - transfer_year) %>% 
+  mutate(
+    length_of_stay = 
+      if_else(
+        is.na(length_of_stay) & status == "Alive", 
+        today() %>% year() %>% as.integer() - transfer_year, 
+        length_of_stay
+      )
+  ) %>% 
+  ungroup()
 ```
 
 ## Cetaceans with high numbers of transfers
@@ -429,6 +439,7 @@ transfer_data_parks %>%
 
 ```{r}
 transfer_data_parks %>% 
+  filter(acquisition == "Born") %>% 
   mutate(capt_lifetime = (birth_year %--% entry_date) %>% time_length("years")) %>% 
   drop_na(capt_lifetime) %>% 
   group_by(location) %>% 
@@ -442,6 +453,26 @@ transfer_data_parks %>%
   labs(
     title = "Twenty Best Parks for Median Cetacean Lifetime", 
     y = "Median Cetacean Lifetime (years)", 
+    x = NULL
+  )
+```
+
+I like this analysis, but I still don't have all that much faith in my measure of "lifetime" because it's based on the `entry_date` and `origin_date` columns, which are not necessarily accurate. It is definitely interesting to see some of these statistics, especially the fact that the US Navy MMP has such a long median lifetime for the cetaceans that spend some time there. It may be more interesting to look at the median *length* of a cetacean's stay at a given park. 
+
+```{r}
+transfer_data_parks %>% 
+  drop_na(length_of_stay) %>% 
+  group_by(location) %>% 
+  summarize(med_length_stay = median(length_of_stay)) %>% 
+  top_n(20, med_length_stay) %>% 
+  ggplot(aes(fct_reorder(location, med_length_stay), med_length_stay)) + 
+  geom_point() + 
+  coord_flip() + 
+  scale_y_continuous(breaks = scales::breaks_width(5)) + 
+  theme_light() + 
+  labs(
+    title = "Twenty Best Parks for Median Length of Stay", 
+    y = "Median Length of Individual Stay (years)", 
     x = NULL
   )
 ```
