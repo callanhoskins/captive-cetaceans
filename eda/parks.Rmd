@@ -392,6 +392,7 @@ transfer_data <-
 ## Cetaceans with high numbers of transfers
 
 ```{r}
+
 transfer_data %>% 
   group_by(name) %>% 
   summarize(n_locs = n()) %>% 

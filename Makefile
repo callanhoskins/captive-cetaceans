@@ -5,7 +5,7 @@ VPATH = scripts data data-raw docs eda reports
 DATA = acquisitions.rds all_cetaceans_data.rds
 
 # EDA studies
-EDA = progress-report-1.md
+EDA = progress-report-1.md progress-report-2.md parks.md breeding.md
 
 # Reports
 REPORTS =
