@@ -1,7 +1,7 @@
 Captive Cetaceans
 ================
 Callan Hoskins
-2020-03-11
+2020-03-12
 
   - [Introduction](#introduction)
   - [Where do they come from?](#where-do-they-come-from)
@@ -214,6 +214,76 @@ natural_locs <-
     "Vero Beach, Florida",
     "White Sea, Russia"
   )
+
+# Longitude and latitude locations for parks that have had over 
+# five individual animal stays
+parks_locations <- 
+  tribble(
+    ~ location, ~ longitude, ~ latitude, 
+    "Dolphin Research Center", 24.7670, -80.9455,   
+    "SeaWorld San Diego", 32.7648, -117.2266, 
+    "SeaWorld Aurora", 41.3481, -81.3726, 
+    "SeaWorld Orlando", 28.4115, -81.4617, 
+    "SeaWorld San Antonio", 29.4584, -98.6993, 
+    "Busch Gardens Tampa", 28.0372, -82.4194,
+    "National Aquarium Baltimore", 39.2854, -76.6084, 
+    "New England Aquarium", 45.3591, -71.0498, 
+    "US Navy MMP", 32.6810, -117.1783,  
+    "Theater of the Sea", 24.9445, -80.6038, 
+    "Discovery Cove", 28.4051, -81.4624, 
+    "Dolphin Connection", 24.7765, -80.9096, 
+    "Brookfield Zoo", 41.8329, -87.8357,
+    "Minnesota Zoo", 44.7678, -93.1967, 
+    "Six Flags Discovery Kingdom", 38.1382, -122.2340,
+    "Dolphin Quest Hawaii", 19.9372, -155.7911, 
+    "Dolphin Quest Oahu ", 21.2719, -157.7738, 
+    "Dolphin Quest Bermuda", 32.3078, -64.8324,
+    "EPCOT Center", 28.3747, -81.5494,
+    "Texas State Aquarium", 27.8138, -97.3920,
+    "Point Defiance Zoo", 47.3049, -122.5208,
+    "Georgia Aquarium", 33.7634, -84.3951, 
+    "Shedd Aquarium", 41.8676, -87.6140,
+    "Dolphins Plus Oceanside", 25.0843, -80.4422,
+    "Dolphins Plus Bayside", 25.1190, -80.4190,
+    "Sea Life Park Hawaii", 21.3134, -157.6633, 
+    "Gulfarium Marine Adventure Park", 30.3945, -86.5935, 
+    "Gulf World Marine Park", 30.21116, -85.867186, 
+    "Dolphinaris Arizona", 33.5554, -111.8774, 
+    "Mystic Aquarium", 41.3543, -71.9665, 
+    "Mirage Dolphin Habitat", 36.1026, -116.1703, 
+    "Miami Seaquarium", 26.7343, -80.1649, 
+    "Indianapolis Zoo", 39.7674, -86.1807,
+    "Marineland of Canada", 43.0660, -79.0729,
+    "Clearwater Marine Aquarium", 27.9769, -82.8191, 
+    "Marineland of the Pacific", 33.7363, -118.3981,
+    "Sea-Arama Marineworld", 29.156, -94.5126,
+    "Quinlan Marine Attractions", 37.4737, -81.2545, 
+    "Marine Animal Productions", 25.7617, -80.1918, 
+    "Niagara Aquarium", 43.0943, -79.0601, 
+    "Marine World Africa USA", 38.1382, -122.2340, 
+    "New York Aquarium", 40.5743, -73.9749, 
+    "Long Marine Laboratory", 36.9497, -122.0656, 
+    "SeaWorld Kamogawa", 35.1159, 140.1203, 
+    "Seattle Marine Aquarium", 47.6077, -122.3431, 
+    "Marine Life Oceanarium", 30.3674, -89.0928
+  )
+
+# Information for Mapbox map of parks
+mapbox_username <- "callanhoskins"
+mapbox_accesstoken <- 
+  "pk.eyJ1IjoiY2FsbGFuaG9za2lucyIsImEiOiJjazdncWxoMW4wMmY5M2RwYTZsY2xrbXg0In0.LCHx5yqvIiLRwD7FoWaFjQ"
+mapbox_style_id <- "ck7odrc2m0t4h1ilhb5n7p90s"
+longitude <- -97.8252
+latitude <- 35.0426
+zoom <- 3
+width <- 900
+height <- 600
+api_call <- 
+  str_glue(
+    "https://api.mapbox.com/styles/v1/{mapbox_username}/{mapbox_style_id}/static/",
+    "{longitude},{latitude},{zoom}/{width}x{height}?access_token={mapbox_accesstoken}"
+  )
+file_parks_map <- here::here("images/file_parks_map.png")
 
 #===============================================================================
 
@@ -903,6 +973,36 @@ naval mines, retrieving underwater objects, and amphibious espionage. As
 well, because it is a public program, it is supervised by a board of
 experts who ensure that the dolphins in the program are properly cared
 for. It may be one of my favorite government programs, ever.
+
+If you are interested in checking whether there is a facility with
+captive cetaceans near you, you can check on [this
+map](https://api.mapbox.com/styles/v1/callanhoskins/ck7odrc2m0t4h1ilhb5n7p90s.html?fresh=true&title=view&access_token=pk.eyJ1IjoiY2FsbGFuaG9za2lucyIsImEiOiJjazdncWxoMW4wMmY5M2RwYTZsY2xrbXg0In0.LCHx5yqvIiLRwD7FoWaFjQ),
+in which parks with green circles have the longest median animal stay
+and parks with red circles have the shortest.
+
+``` r
+# Create geo information for Mapbox
+# Creates an error when file already exists
+# transfer_data_parks %>% 
+#   drop_na(length_of_stay) %>% 
+#   group_by(location) %>% 
+#   filter(n() > 5) %>% 
+#   summarize(
+#     med_length_stay = median(length_of_stay)
+#   ) %>% 
+#   inner_join(parks_locations, by = "location") %>% 
+#   sf::st_as_sf(
+#     coords = c("latitude", "longitude"), 
+#     remove = FALSE, 
+#     agr = "constant", 
+#     crs = 4326
+#   )  %>% 
+#   sf::write_sf("~/Downloads/locations.geojson")
+download.file(url = api_call, destfile = file_parks_map)
+knitr::include_graphics(file_parks_map)
+```
+
+<img src="/home/chosk/GitHub/captive-cetaceans/images/file_parks_map.png" width="576" style="display: block; margin: auto;" />
 
 # Conclusions
 
