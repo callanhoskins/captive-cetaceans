@@ -8,7 +8,7 @@ DATA = acquisitions.rds all_cetaceans_data.rds
 EDA = progress-report-1.md progress-report-2.md parks.md breeding.md
 
 # Reports
-REPORTS =
+REPORTS = final-report.md
 
 # All targets
 all : $(DATA) $(EDA) $(REPORTS)
