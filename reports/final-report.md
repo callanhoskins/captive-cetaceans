@@ -15,6 +15,7 @@ Callan Hoskins
       - [Dolphins](#dolphins)
   - [Which parks treat cetaceans
     best?](#which-parks-treat-cetaceans-best)
+  - [Conclusions](#conclusions)
 
 ``` r
 # Libraries
@@ -893,6 +894,31 @@ cetaceans, at fifteen years. That’s very impressive considering that the
 [average bottlenose dolphin’s
 lifespan](https://www.fisheries.noaa.gov/species/common-bottlenose-dolphin)
 is only twenty years\!
+
+Also, your eyes are not deceiving you; the second-best “park” is
+actually the United States Navy. The [US Navy’s Marine Mammal
+Program](https://www.public.navy.mil/navwar/NIWC-Pacific/technology/Pages/mammals.aspx)
+aims to train dolphins for military tasks like detecting and disabling
+naval mines, retrieving underwater objects, and amphibious espionage. As
+well, because it is a public program, it is supervised by a board of
+experts who ensure that the dolphins in the program are properly cared
+for. It may be one of my favorite government programs, ever.
+
+# Conclusions
+
+Like circuses, the marine mammal entertainment industry has come under
+recent fire for its animals’ poor living conditions. Additionally, media
+portrayals of these animals’ plights has make the issue more real in the
+eyes of many Americans, and we would not be overly optimistic to hope
+that the industry will move towards ending breeding programs and phasing
+out cetacean captivity altogether.
+
+However, there are still over 500 captive cetaceans in the United States
+today, and we must seek to understand how to improve their lives.
+
+I hope this analysis has given you a fuller understanding of life as a
+cetacean in captivity and the marine mammal entertainment industry as a
+whole.
 
 1.  Law & Neuroscience: The Case of Solitary Confinement. Jules Lobel &
     Huda Akil. 2018 by the American Academy of Arts & Sciences
