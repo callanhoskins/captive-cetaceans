@@ -821,9 +821,10 @@ If you are interested in checking whether there is a facility with captive cetac
 #   )  %>% 
 #   sf::write_sf("~/Downloads/locations.geojson")
 download.file(url = api_call, destfile = file_parks_map)
-knitr::include_graphics(file_parks_map)
 ```
 
+
+![Facilities with Cetaceans in the United states](../images/file_parks_map.png)
 
 # Conclusions
 

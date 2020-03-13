@@ -1,7 +1,7 @@
 Captive Cetaceans
 ================
 Callan Hoskins
-2020-03-12
+2020-03-13
 
   - [Introduction](#introduction)
   - [Where do they come from?](#where-do-they-come-from)
@@ -999,10 +999,10 @@ and parks with red circles have the shortest.
 #   )  %>% 
 #   sf::write_sf("~/Downloads/locations.geojson")
 download.file(url = api_call, destfile = file_parks_map)
-knitr::include_graphics(file_parks_map)
 ```
 
-<img src="/home/chosk/GitHub/captive-cetaceans/images/file_parks_map.png" width="576" style="display: block; margin: auto;" />
+![Facilities with Cetaceans in the United
+states](../images/file_parks_map.png)
 
 # Conclusions
 
